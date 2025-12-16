@@ -1,0 +1,118 @@
+import asyncio
+import json
+import threading
+import pygame
+import websockets
+
+width, height = 50, 50
+CELL_SIZE = 10
+colors = {
+    "block": {
+        "block.minecraft.grass_block": (0,100,0),
+        "block.minecraft.air": (100,100,255),
+        "block.minecraft.oak_planks": (210, 180, 140)
+        },
+    "entity": {
+        "entity.minecraft.player": (255,255,255)
+    }
+}
+
+cameraSpeed = 0.05
+
+cameraXAngle = 0
+cameraYAngle = 0
+
+frame = {}
+frame_lock = threading.Lock()
+
+# --- WebSocket server ---
+async def ws_handler(websocket):
+    async for message in websocket:
+        data = json.loads(message)
+
+        # data is now a list of pixels
+        with frame_lock:
+            for px in data:
+                x = int(px["x"])
+                y = int(px["y"])
+                item = px["item"]
+                frame[(x, y)] = item
+        
+        response = {"status": "ok", "cameraAngle": {"x":cameraXAngle,"y":cameraYAngle}}
+        await websocket.send(json.dumps(response))
+
+async def run_ws():
+    async with websockets.serve(ws_handler, "0.0.0.0", 5000):
+        await asyncio.Future()  # run forever
+
+threading.Thread(
+    target=lambda: asyncio.run(run_ws()),
+    daemon=True
+).start()
+
+# --- Pygame ---
+pygame.init()
+screen = pygame.display.set_mode((width * CELL_SIZE, height * CELL_SIZE))
+pygame.display.set_caption("Frame Viewer")
+clock = pygame.time.Clock()
+
+frameNum = 0
+running = True
+while running:
+    frameNum += 1
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+
+    if frameNum % 5 == 0:
+        if keys[pygame.K_w]:
+            cameraYAngle -= cameraSpeed
+        if keys[pygame.K_s]:
+            cameraYAngle += cameraSpeed
+        if keys[pygame.K_a]:
+            #print("Holding A")
+            cameraXAngle -= cameraSpeed
+            print(cameraXAngle)
+        if keys[pygame.K_d]:
+            #print("Holding D")
+            cameraXAngle += cameraSpeed
+            print(cameraXAngle)
+        if keys[pygame.K_SPACE]:
+            cameraXAngle = 0
+            cameraYAngle = 0
+
+    screen.fill((0, 0, 0))
+
+    with frame_lock:
+        current = dict(frame)
+
+    for (x, y), item in current.items():
+        pixelColor = (0,0,0)
+        if item.get("is_block"):
+            if item["block_type"] in colors["block"]:
+                pixelColor = colors["block"][item["block_type"]]
+            
+            elif item["block_type"] == "block.minecraft.air":
+                pixelColor = (100,100,100)
+
+            else:
+                print(f'[RENDER] error: no color value for block: \"{item["block_type"]}\"')
+
+        elif item.get("is_entity"):
+            if item["descriptionId"] in colors["entity"]:
+                pixelColor = colors["entity"][item["descriptionId"]]
+            else:
+                print(f'[RENDER] error: no color value for entity: \"{item["descriptionId"]}\"')
+
+        pygame.draw.rect(
+                screen,
+                pixelColor,
+                (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+            )
+
+    pygame.display.flip()
+    clock.tick(30)
+
+pygame.quit()
