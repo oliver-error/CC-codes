@@ -4,18 +4,18 @@ term.clear()
 turtle.select(slotNum)
 
 local chop = function() -- chop code
-print("runniong chop")
-while turtle.detectUp() do
-    turtle.select(slotNum)
-    if turtle.compareUp() then
-        turtle.digUp()
-        turtle.up()
-    end
+    print("runniong chop")
+    while turtle.detectUp() do
+        turtle.select(slotNum)
+        if turtle.compareUp() then
+            turtle.digUp()
+            turtle.up()
+        end
     end
     while not turtle.detectDown() do
             turtle.down()
-        end
-        turtle.back()
+    end
+    turtle.back()
 end
 
 
