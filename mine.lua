@@ -5,6 +5,27 @@ local function setup1(mycomputerID)
     rednet.send(sendcomputerID, mycomputerID)
     return sendcomputerID
 end
+
+local function equipPick()
+    for i = 1, 16 do
+        local item = turtle.getItemDetail(i)
+        if (item and item.name == "minecraft:diamond_pickaxe") then
+            turtle.select(i)
+            break
+        end
+    end
+end
+
+local function equipModem()
+    for i = 1, 16 do
+        local item = turtle.getItemDetail(i)
+        if (item and item.name == "cc-tweaked:ender_modem") then
+            turtle.select(i)
+            break
+        end
+    end
+end
+
 local function ore(direction)
     -- this looks garbage and NOTHING will change that
     if(direction == "forward") then
@@ -159,6 +180,7 @@ local function refuel(movements)
     turtle.turnRight()
     turtle.turnRight()
     turtle.select(1)
+    local count = 0
     while(turtle.getFuelLevel() <= 2000)do
         while(true)do
             if(refuel(0))then
@@ -171,9 +193,13 @@ local function refuel(movements)
                 turtle.select(1)
                 turtle.suck(64)
             end
+            count = count + 1
+            if(count > 100) then
+                return false
+            end
         end
     end
-    local entry = #movements
+    local entry = 1
     while(true) do
         local direction = movements[entry]
         if(direction == "forward")then
@@ -191,34 +217,60 @@ local function refuel(movements)
         else
             break
         end
-        entry = entry-1
+        entry = entry+1
     end
 end
 
-
+equipPick()
 local direction = {["d"] = "down", ["u"] = "up", ["f"] = "forward", ["r"] = "right", ["l"] = "left" }
 local mycomputerID = 8
 local sendcomputerID = setup1(mycomputerID)
 local movements = {}
+local checks = nil
 rednet.send(sendcomputerID, "what is my Y?")
 local ylevel = rednet.receive()
 for i = 16, ylevel, -1 do
     turtle.digDown()
     turtle.down()
-    table.insert(movements, direction["d"])
+    table.insert(#movements, direction["d"])
 end 
 check()
 while(true) do
-    if(~(turtle.getFuelLevel() < #movements + 60))then
+    if(not turtle.getFuelLevel() < #movements + 60)then
         turtle.dig()
         turtle.forward()
-        table.insert(movements, direction["f"])
+        table.insert(#movements, direction["f"])
+        equipModem()
         msg = rednet.receive(sendcomputerID, 0.1)
-        if(msg ~= false) then
-            -- add the potiential messages here
+        if(msg ~= false) then -- you CANNOT put == true since it return false on a failure and it NEVER returns true
+            if(msg == "return" or msg == "refuel")then
+                refuel()
+                rednet.send(sendcomputerID, "returning!")
+            end
         end
+        equipPick()
         check()
     else
-        refuel(movements)
+        checks = refuel(movements) -- full refuel code
+        if(checks == false)then
+        while(turtle.getFuelLevel() <= 2000)do
+            while(true)do
+                if(refuel(0))then
+                    refuel(64)
+                    break
+                end
+                if(turtle.getSelectedSlot() >= 16)then
+                    turtle.select(turtle.getSelectedSlot() + 1)
+                else
+                    turtle.select(1)
+                    turtle.suck(64)
+                end
+                count = count + 1
+                if(count > 100) then
+                    rednet.send(sendcomputerID, "insufficient fuel")
+                end
+            end
+        end
+        end
     end
 end
