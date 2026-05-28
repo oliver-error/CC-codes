@@ -1,41 +1,62 @@
-local XCordSlot = 1
-local YCordSlot = 2
-local ZCordSlot = 3
+peripheral.getMethods("staff")
 local staffSide = "left"
-local scrollSide = nil
-local staff = peripheral.wrap(staffSide)
+Staff = peripheral.wrap(staffSide)
+
 local spells = {
-    overgrow = "NORTH_EAST wqaqwawqaqw",
-    numToVector = "EAST eqqqqq",
-    writeToScroll = "EAST deeeee",
-    readScroll = "EAST aqqqqq",
-    executeScroll = "SOUTH_EAST deaqq",
-    posToPlayer = "SOUTH_EAST qqqqqdaqaawe",
-    explosion = "EAST aawaawaa",
-    impulse = "SOUTH_WEST awqqqwaqw",
-    ten = " SOUTH_EAST aqaae",
-    zero = "SOUTH_EAST aqaa"
+    overgrow = {
+        startDir = "NORTH_EAST",
+        angles = "wqaqwawqaqw"
+    },
+    numToVector = {
+        startDir = "EAST",
+        angles = "eqqqqq"
+    },
+    writeToScroll = {
+        startDir = "EAST",
+        angles = "deeeee"
+    },
+    readFocus = {
+        startDir = "EAST",
+        angles = "aqqqqq"
+    },
+    executeScroll = {
+        startDir = "SOUTH_EAST",
+        angles = "deaqq"
+    },
+    posToPlayer = {
+        startDir = "SOUTH_EAST",
+        angles = "qqqqqdaqaawe"
+    },
+    explosion = {
+        startDir = "EAST",
+        angles = "aawaawaa"
+    },
+    placeBlock = {
+        startDir = "SOUTH_WEST",
+        angles = "eeeeede"
+    },
+    impulse = {
+        startDir = "SOUTH_WEST",
+        angles = "awqqqwaqw"
+    },
+    ten = {
+        startDir = "SOUTH_EAST",
+        angles = "aqaae"
+    },
+    zero = {
+        startDir = "SOUTH_EAST",
+        angles = "aqaa"
+    }
 }
 
-local function getpos()
-    for i = 1, 3 do
-        turtle.select(i)
-        staff.runPattern(spells.readScroll)
-        staff.runPattern(spells.executeScroll)
-    end
-    staff.runPattern(spells.numToVector)
-end
 
-if staffSide == "left" then
-    scrollSide = "right"
-else
-    scrollSide = "left"
-end
-
-getpos()
-staff.runPattern(spells.posToPlayer)
-staff.runPattern(spells.zero)
-staff.runPattern(spells.ten)
-staff.runPattern(spells.zero)
-staff.runPattern(spells.numToVector)
-staff.runPattern(spells.impulse)
+Staff.pushStack(-384)
+Staff.pushStack(92)
+Staff.pushStack(-86)
+Staff.runPattern(spells.numToVector)
+Staff.runPattern(spells.posToPlayer)
+Staff.runPattern(spells.zero)
+Staff.runPattern(spells.ten)
+Staff.runPattern(spells.zero)
+Staff.runPattern(spells.numToVector)
+Staff.runPattern(spells.impulse)
