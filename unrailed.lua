@@ -1,3 +1,4 @@
+math.randomseed(os.time())
 Xoffset = -5
 Yoffset = 52
 Zoffset = 8
@@ -28,6 +29,13 @@ end
 
 for x = 1, 7 do
     for y = 1, 7 do
-        makeTile(x*3, 0, y*3, "grass")
+        local random = math.random(1, 3)
+        if random == 1 then
+            makeTile(x*3, 0, y*3, "stone")
+        elseif random == 2  then
+            makeTile(x*3, 0, y*3, "grass")
+        else
+            makeTile(x*3, 0, y*3, "forest")
+        end
     end
 end
