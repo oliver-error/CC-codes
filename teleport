@@ -1,2 +1,2 @@
 local staff = peripheral.wrap("right")
-staff.runPattern({angles = [B; 5B, 5B, 4B, 0B], start_dir = 0b})
+staff.runPattern({type = "hexcasting:pattern", angles = "aqaa", start_dir = "SOUTH_EAST"})
