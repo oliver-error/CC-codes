@@ -2,6 +2,9 @@ peripheral.getMethods("staff")
 local staffSide = "left"
 Staff = peripheral.wrap(staffSide)
 
+local function cast(spellName)
+    Staff.runPattern(spells[spellName].startDir, spells[spellName].angles)
+end
 local spells = {
     overgrow = {
         startDir = "NORTH_EAST",
@@ -39,24 +42,16 @@ local spells = {
         startDir = "SOUTH_WEST",
         angles = "awqqqwaqw"
     },
-    ten = {
-        startDir = "SOUTH_EAST",
-        angles = "aqaae"
-    },
-    zero = {
-        startDir = "SOUTH_EAST",
-        angles = "aqaa"
-    }
 }
 
 
-Staff.pushStack(-384)
-Staff.pushStack(92)
-Staff.pushStack(-86)
-Staff.runPattern(spells.numToVector)
-Staff.runPattern(spells.posToPlayer)
-Staff.runPattern(spells.zero)
-Staff.runPattern(spells.ten)
-Staff.runPattern(spells.zero)
-Staff.runPattern(spells.numToVector)
-Staff.runPattern(spells.impulse)
+Staff.pushStack(-454)
+Staff.pushStack(69)
+Staff.pushStack(-12)
+cast("numToVector")
+cast("posToPlayer")
+Staff.pushStack(0)
+Staff.pushStack(10)
+Staff.pushStack(0)
+cast("numToVector")
+cast("impulse")
