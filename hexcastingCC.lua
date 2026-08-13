@@ -2,9 +2,6 @@ peripheral.getMethods("staff")
 local staffSide = "left"
 Staff = peripheral.wrap(staffSide)
 
-local function cast(spellName)
-    Staff.runPattern(spells[spellName].startDir, spells[spellName].angles)
-end
 local spells = {
     overgrow = {
         startDir = "NORTH_EAST",
@@ -42,16 +39,60 @@ local spells = {
         startDir = "SOUTH_WEST",
         angles = "awqqqwaqw"
     },
+    equal = {
+        startDir = "EAST",
+        angles = "ad"
+    },
+    removeFromList = {
+        startDir = "SOUTH_WEST",
+        angles = "edqdewaqa"
+    },
+    zoneDistLiving = {
+        startDir = "SOUTH_EAST",
+        angles = "qqqqqwdeddwd"
+    },
+    flockDist = {
+        startDir = "NORTH_WEST",
+        angles = "qwaeawq"
+    },
+    hermesGambit = {
+        startDir = "SOUTH_EAST",
+        angles = "deaqq"
+    },
+    Jesters = {
+        startDir = "EAST",
+        angles = "aawdd"
+    }
 }
 
+local function cast(spellName)
+    Staff.runPattern(spells[spellName].startDir, spells[spellName].angles)
+end
 
-Staff.pushStack(-454)
-Staff.pushStack(69)
-Staff.pushStack(-12)
+
+Staff.pushStack(-540)
+Staff.pushStack(67)
+Staff.pushStack(122)
 cast("numToVector")
-cast("posToPlayer")
-Staff.pushStack(0)
 Staff.pushStack(10)
-Staff.pushStack(0)
+cast("zoneDistLiving")
+cast("flockDist")
+Staff.pushStack(-541)
+Staff.pushStack(68)
+Staff.pushStack(122)
 cast("numToVector")
-cast("impulse")
+print(textutils.serialise(Staff.getStack()))
+turtle.select(13)
+cast("readFocus")
+turtle.select(1)
+cast("hermesGambit")
+turtle.dig()
+turtle.select(14)
+turtle.equipRight()
+turtle.select(15)
+for i = 2, 9, 1 do
+    turtle.transferTo(i, 1)
+end
+turtle.select(14)
+turtle.equipRight()
+turtle.craft()
