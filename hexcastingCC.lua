@@ -127,9 +127,6 @@ while true do
             end
         end
 
-        local log = fs.open("log.txt", "r")
-        local uuids = log.readAll()
-        log.close()
         local numberOfAllays = 0
 
         for i = 1, top, 1 do
@@ -148,11 +145,7 @@ while true do
 
                 if entry and entry["iota$serde"] == "hextweaks:entity" then
                     local isAllay = entry.name:find("allay")
-                    local isLogged = uuids:find(entry.uuid, 1, true)
-                    if isAllay and not isLogged then
-                        local Appendlog = fs.open("log.txt", "a")
-                        Appendlog.writeLine(entry.uuid .. ",")
-                        Appendlog.close()
+                    if isAllay then
                         break
                     else
                         local fisherIndex = top - i
@@ -166,6 +159,8 @@ while true do
                     end
                 end
             end
+        else
+            found = true
         end
         
         if not found then
@@ -173,17 +168,24 @@ while true do
         end
         sleep(0.1)
     end
-
+    log = fs.open("log.txt", "w")
+    log.writeLine(textutils.serialise(Staff.getStack()))
+    log.close()
     turtle.select(1)
     cast("Jesters")
     cast("gemini")
-    Staff.pushStack(3)
+    Staff.pushStack(2)
     cast("fisherMan")
     cast("readFocus")
     cast("hermesGambit")
     Staff.pushStack(10)
     Staff.pushStack(1)
     cast("blackSun")
+
+    while findItem("minecraft:amethyst_shard") == nil do
+        turtle.select(findItem("minecraft:amethyst_shard"))
+        turtle.dropUp()
+    end
 
     turtle.dig()
     if findItem("hexcasting:quenched_allay_shard") == nil then
