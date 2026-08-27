@@ -118,8 +118,14 @@ local function cast(spellName)
     Staff.runPattern(spells[spellName].startDir, spells[spellName].angles)
 end
 local function pushNum(number)
+    local pattern = {}
     -- a crime against humanity
-    local pattern = {"SOUTH_EAST", "aqaa"}
+    if math.abs(number) == number then
+        pattern = {"SOUTH_EAST", "aqaa"}
+    else
+        pattern = {"NORTH_EAST", "dedd"}
+    end
+    
     for i = 1, number, 1 do
         pattern[2] = pattern[2] .. "w"
     end
@@ -130,7 +136,7 @@ end
 cast("introspection")
     -- setup focus list
     cast("falseRefl")
-    pushNum(1)
+    pushNum(2)
     cast("scribesRefl")
     pushNum(3)
     cast("flockGam")
@@ -190,25 +196,31 @@ cast("introspection")
     cast("retrospection")
     -- setup thoths list
     pushNum(0)
-    pushNum(31)
+    pushNum(30)
     cast("geminiGam")
-    pushNum(31)
+    pushNum(30)
     cast("flockGam")
     cast("thothsGam")
     -- get data and interpret it
     cast("scribesRefl")
     cast("flockDist")
     cast("rotationGam")
+    cast("reveal")
     cast("introspection")
     cast("retrospection")
     cast("introspection")
-    cast("charonsGam")
+    cast("jestersGam")
+    cast("novicesGam")
+    pushNum(-2)
+    cast("jestersGam")
     cast("retrospection")
     cast("augursExal")
     cast("hermesGam")
     cast("jestersGam")
     cast("mindsRefl")
     cast("jestersGam")
+    pushNum(1)
+    cast("additiveExal")
     cast("blink")
     cast("scribesGam")
     cast("novicesGam")
